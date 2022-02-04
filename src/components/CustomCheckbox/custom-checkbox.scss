@@ -1,0 +1,33 @@
+@use './../../assets/sass/utils/mixins' as *;
+
+.custom-checkbox {
+  user-select: none;
+  cursor: pointer;
+  &__input {
+    display: none;
+    &:checked + .custom-checkbox__mark:before {
+      content: '✔';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &__mark {
+    position: relative;
+    display: inline-flex;
+    width: rem(15);
+    height: rem(15);
+    border-radius: rem(5);
+    border: 1px solid var(--bs-gray-400);
+    &:before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--bs-blue);
+    }
+  }
+}

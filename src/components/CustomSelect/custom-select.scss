@@ -1,0 +1,8 @@
+@use './../../assets/sass/utils/mixins' as *;
+
+.custom-select {
+  &__control {
+    border-radius: rem(15);
+    border-color: var(--bs-gray-400);
+  }
+}

@@ -1,0 +1,14 @@
+@import './../../assets/sass/utils/mixins';
+
+.header-main {
+  padding: rem(32);
+  bottom: 1rem;
+  background-color: var(--bs-blue);
+  color: var(--bs-light);
+  margin-bottom: rem(30);
+  &__text {
+    font-size: rem(21);
+    text-align: center;
+    text-transform: uppercase;
+  }
+}

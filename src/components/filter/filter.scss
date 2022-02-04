@@ -1,0 +1,48 @@
+@use './../../assets/sass/utils/mixins' as *;
+
+.filter {
+  &__overlay {
+    display: none;
+  }
+
+  &__close-btn {
+    display: none;
+  }
+
+  &__content {
+    border: 1px solid var(--bs-gray-400);
+    border-radius: rem(15);
+    padding: rem(15);
+  }
+
+  &__title {
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  &__group:not(:last-child) {
+    margin-bottom: rem(15);
+  }
+
+  &__items-wrap {
+    max-height: rem(300);
+  }
+
+  &__item:not(:last-child) {
+    margin-bottom: rem(10);
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+  }
+
+  .custom-checkbox {
+    display: flex;
+    align-items: center;
+    &__mark {
+      margin-right: 10px;
+    }
+  }
+}

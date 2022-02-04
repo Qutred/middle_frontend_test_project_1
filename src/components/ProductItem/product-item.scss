@@ -1,0 +1,13 @@
+@use './../../assets/sass/utils/mixins' as *;
+
+.product-item {
+  border: 1px solid var(--bs-gray-400);
+  border-radius: rem(15);
+  padding: rem(20);
+  &__info-row:not(:last-child) {
+    margin-bottom: 10px;
+    > span {
+      margin-right: 10px;
+    }
+  }
+}

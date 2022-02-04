@@ -1,0 +1,11 @@
+@use 'sass:math';
+
+/* convert px to rem */
+@function rem($value) {
+  @return math.div($value, 16) + rem;
+}
+
+/* convert px to rem */
+@function em($desirableVal, $baseVal) {
+  @return math.div($desirableVal, $baseVal) + em;
+}
