@@ -8,18 +8,21 @@ import BadgeWithClose from '../badge/BadgeWithClose';
 import Loader from '../Loader/Loader';
 import { useEffect } from 'react';
 import productsData from './../../data.json';
+import { sortItemsBy } from './helpers';
 
 const Catalog = () => {
   const [isDataReady, setIsDataReady] = useState(false);
   const [data, setData] = useState([]);
-  const [productQtyOnPage, setproductQtyOnPage] = useState(5);
-  const [loading, setLoading] = useState({ loading: false, message: null });
-
+  const [productOnPage, setProductOnPage] = useState(5);
   const [activeFilters, setActiveFilters] = useState({
     brands: [],
     stock: [],
     weight: [],
   });
+
+  const [sortBy, setSortBy] = useState('asc');
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fakeAsyncCall = () => {
@@ -52,15 +55,32 @@ const Catalog = () => {
     }
   };
 
+  const handleSortChange = activeSortType => {
+    setSortBy(activeSortType.value);
+  };
+
+  const handlePaginationClick = direction => {
+    const productsAmount = data.length;
+    const pageAmount = Math.ceil(productsAmount / productOnPage);
+
+    if (direction === 'prev') {
+      if (currentPage >= 2) {
+        setCurrentPage(currentPage - 1);
+      }
+    } else if (direction === 'next') {
+      if (currentPage < pageAmount) {
+        setCurrentPage(currentPage + 1);
+      }
+    }
+  };
+
   const hasSomeActiveFilters = () => {
     debugger;
     let filterKeys = Object.keys(activeFilters);
 
-    return filterKeys.some(key => activeFilters[key].length);
-  };
-
-  const computeProducts = () => {
-    return data;
+    return filterKeys.some(filter => {
+      return activeFilters[filter].length;
+    });
   };
 
   const renderFilters = useMemo(() => {
@@ -115,7 +135,33 @@ const Catalog = () => {
     });
   };
 
-  let computedProducts = computeProducts();
+  const getProductsSlice = paginationData => {
+    let portion;
+    portion = data.slice(
+      paginationData.pageStartOffset,
+      paginationData.pageEndOffset
+    );
+
+    return portion || [];
+  };
+
+  const getPaginationData = () => {
+    if (isDataReady && data.length > 0) {
+      const productsAmount = data.length;
+      const pageAmount = Math.ceil(productsAmount / productOnPage);
+      const pageStartOffset = (currentPage - 1) * productOnPage;
+      const pageEndOffset = pageStartOffset + productOnPage;
+
+      return { productsAmount, pageAmount, pageStartOffset, pageEndOffset };
+    }
+
+    return {
+      productsAmount: 0,
+      pageAmount: 0,
+      pageStartOffset: 0,
+      pageEndOffset: 0,
+    };
+  };
 
   if (!isDataReady) {
     return (
@@ -124,6 +170,10 @@ const Catalog = () => {
       </div>
     );
   }
+
+  let paginationData = getPaginationData();
+  let portion = getProductsSlice(paginationData);
+  portion = portion.sort(sortItemsBy(sortBy));
 
   return (
     <div className="catalog container">
@@ -136,7 +186,7 @@ const Catalog = () => {
       </div>
       <div className="catalog__content">
         <div className="catalog__sorting">
-          <Sorting />
+          <Sorting sortBy={sortBy} handleSortChange={handleSortChange} />
         </div>
         {hasSomeActiveFilters() ? (
           <div className="catalog__choosed-filters choosed-filter">
@@ -146,13 +196,17 @@ const Catalog = () => {
         ) : null}
 
         <div className="catalog__items-wrapper">
-          {computedProducts.map(item => {
+          {portion.map(item => {
             const { artnumber, ...rest } = item;
             return <ProductItem key={artnumber} {...rest}></ProductItem>;
           })}
         </div>
         <div className="catalog__pagination">
-          <Pagintation />
+          <Pagintation
+            from={currentPage}
+            to={paginationData.pageAmount}
+            handlePaginationClick={handlePaginationClick}
+          />
         </div>
       </div>
     </div>

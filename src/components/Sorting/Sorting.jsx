@@ -6,10 +6,16 @@ const sortTypes = [
   { value: 'desc', label: 'Сначала дороже' },
 ];
 
-const Sorting = () => {
+const Sorting = ({ sortBy, handleSortChange }) => {
+  const activeSortType = sortTypes.find(item => item.value === sortBy);
+
   return (
     <div>
-      <CustomSelext sortTypes={sortTypes}></CustomSelext>
+      <CustomSelext
+        sortTypes={sortTypes}
+        defaultValue={activeSortType}
+        handleSortChange={handleSortChange}
+      ></CustomSelext>
     </div>
   );
 };
