@@ -3,8 +3,9 @@ import './custom-checkbox.scss';
 
 const CustomCheckbox = ({
   id,
+  name,
   isChecked,
-  handleCheck,
+  handleChange,
   labelLeft,
   children,
 }) => {
@@ -14,10 +15,11 @@ const CustomCheckbox = ({
         <span className="custom-checkbox__label-txt">{children}</span>
       ) : null}
       <input
+        name={name}
         checked={isChecked}
         type="checkbox"
         id={id}
-        onChange={handleCheck}
+        onChange={handleChange}
         className="custom-checkbox__input"
       />
       <span className="custom-checkbox__mark"></span>

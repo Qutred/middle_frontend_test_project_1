@@ -1,0 +1,11 @@
+@use './../../assets/sass/utils/mixins' as *;
+
+.loader {
+  display: flex;
+  margin: 0 auto;
+  justify-content: center;
+  &__spinner-wrapper {
+    width: rem(120);
+    height: rem(120);
+  }
+}
