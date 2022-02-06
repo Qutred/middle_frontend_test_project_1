@@ -1,17 +1,18 @@
 import React from 'react';
 import './pagination.scss';
 
-const Pagintation = ({ from, to, handlePaginationClick }) => {
+const Pagintation = ({ from, to, handlePaginationClick, isHidden }) => {
   const handleBtnClick = type => {
     return e => {
       handlePaginationClick(type);
     };
   };
 
-  return (
+  return isHidden ? null : (
     <div className="pagination">
       <button
         className="pagination__button pagination__button_prev"
+        disabled={from < 2}
         onClick={handleBtnClick('prev')}
       >
         Предыдущая страница
@@ -21,6 +22,7 @@ const Pagintation = ({ from, to, handlePaginationClick }) => {
       </div>
       <button
         className="pagination__button pagination__button_next"
+        disabled={from === to}
         onClick={handleBtnClick('next')}
       >
         Следующая страница

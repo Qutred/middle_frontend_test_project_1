@@ -217,6 +217,7 @@ const Catalog = () => {
         </div>
         <div className="catalog__pagination">
           <Pagintation
+            isHidden={portion.length === 0}
             from={currentPage}
             to={paginationData.pageAmount}
             handlePaginationClick={handlePaginationClick}

@@ -16,9 +16,12 @@
     cursor: pointer;
     transition: all 250ms ease-in-out;
     border-radius: rem(15);
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--bs-blue);
       color: var(--bs-white);
+    }
+    &:disabled {
+      cursor: default;
     }
   }
 }
