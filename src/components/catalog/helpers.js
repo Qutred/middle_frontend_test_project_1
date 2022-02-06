@@ -9,3 +9,21 @@ export const sortItemsBy = type => {
     return sortByAsc;
   }
 };
+
+export const getFilteredProducts = activeFilters => {
+  let filterKeys = Object.keys(activeFilters);
+
+  return function (product) {
+    let result = filterKeys
+      .map(filterType => {
+        if (activeFilters[filterType].length === 0) {
+          return true;
+        } else {
+          return activeFilters[filterType].includes(product[filterType]);
+        }
+      })
+      .every(accaptable => accaptable);
+
+    return result;
+  };
+};

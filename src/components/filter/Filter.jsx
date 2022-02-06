@@ -18,8 +18,9 @@ const Filter = ({ filters, activeFilters, onChange }) => {
       <div className="filter__content">
         {filterKeys.length > 0 &&
           filterKeys.map((filterKey, index) => {
+            debugger;
             const title =
-              filterKey === 'brands'
+              filterKey === 'brand'
                 ? 'Бренд '
                 : filterKey === 'stock'
                 ? 'Наличие в магазине'

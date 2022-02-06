@@ -8,14 +8,14 @@ import BadgeWithClose from '../badge/BadgeWithClose';
 import Loader from '../Loader/Loader';
 import { useEffect } from 'react';
 import productsData from './../../data.json';
-import { sortItemsBy } from './helpers';
+import { sortItemsBy, getFilteredProducts } from './helpers';
 
 const Catalog = () => {
   const [isDataReady, setIsDataReady] = useState(false);
   const [data, setData] = useState([]);
   const [productOnPage, setProductOnPage] = useState(5);
   const [activeFilters, setActiveFilters] = useState({
-    brands: [],
+    brand: [],
     stock: [],
     weight: [],
   });
@@ -43,6 +43,7 @@ const Catalog = () => {
           [filterType]: [...prevState[filterType], filterValue],
         };
       });
+      setCurrentPage(1);
     } else {
       setActiveFilters(prevState => {
         return {
@@ -52,6 +53,7 @@ const Catalog = () => {
           ],
         };
       });
+      setCurrentPage(1);
     }
   };
 
@@ -75,7 +77,6 @@ const Catalog = () => {
   };
 
   const hasSomeActiveFilters = () => {
-    debugger;
     let filterKeys = Object.keys(activeFilters);
 
     return filterKeys.some(filter => {
@@ -85,7 +86,7 @@ const Catalog = () => {
 
   const renderFilters = useMemo(() => {
     const filterTypes = {
-      brands: [],
+      brand: [],
       stock: [],
       weight: [],
     };
@@ -96,8 +97,8 @@ const Catalog = () => {
         let weight = dataItem.weight;
         let stock = dataItem.stock;
 
-        if (!filterTypes.brands.includes(brand)) {
-          filterTypes.brands.push(brand);
+        if (!filterTypes.brand.includes(brand)) {
+          filterTypes.brand.push(brand);
         }
 
         if (!filterTypes.weight.includes(weight)) {
@@ -114,7 +115,7 @@ const Catalog = () => {
   }, [data, isDataReady]);
 
   const renderBadges = () => {
-    return Object.keys(activeFilters).map((type, index) => {
+    return Object.keys(activeFilters).map(type => {
       return (
         activeFilters[type].length > 0 &&
         activeFilters[type].map((item, index) => {
@@ -135,19 +136,18 @@ const Catalog = () => {
     });
   };
 
-  const getProductsSlice = paginationData => {
-    let portion;
-    portion = data.slice(
-      paginationData.pageStartOffset,
-      paginationData.pageEndOffset
+  const getProductsSlice = (paginationData, portion) => {
+    return (
+      portion.slice(
+        paginationData.pageStartOffset,
+        paginationData.pageEndOffset
+      ) || []
     );
-
-    return portion || [];
   };
 
-  const getPaginationData = () => {
-    if (isDataReady && data.length > 0) {
-      const productsAmount = data.length;
+  const getPaginationData = portion => {
+    if (isDataReady && portion.length > 0) {
+      const productsAmount = portion.length;
       const pageAmount = Math.ceil(productsAmount / productOnPage);
       const pageStartOffset = (currentPage - 1) * productOnPage;
       const pageEndOffset = pageStartOffset + productOnPage;
@@ -162,6 +162,11 @@ const Catalog = () => {
       pageEndOffset: 0,
     };
   };
+  let portion = data;
+  portion = portion.filter(getFilteredProducts(activeFilters));
+  portion = portion.sort(sortItemsBy(sortBy));
+  let paginationData = getPaginationData(portion);
+  portion = getProductsSlice(paginationData, portion);
 
   if (!isDataReady) {
     return (
@@ -170,10 +175,6 @@ const Catalog = () => {
       </div>
     );
   }
-
-  let paginationData = getPaginationData();
-  let portion = getProductsSlice(paginationData);
-  portion = portion.sort(sortItemsBy(sortBy));
 
   return (
     <div className="catalog container">
