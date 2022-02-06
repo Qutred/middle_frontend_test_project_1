@@ -19,10 +19,9 @@ const Catalog = () => {
     stock: [],
     weight: [],
   });
-
   const [sortBy, setSortBy] = useState('asc');
-
   const [currentPage, setCurrentPage] = useState(1);
+  const pageAmount = useRef(0);
 
   useEffect(() => {
     const fakeAsyncCall = () => {
@@ -62,15 +61,14 @@ const Catalog = () => {
   };
 
   const handlePaginationClick = direction => {
-    const productsAmount = data.length;
-    const pageAmount = Math.ceil(productsAmount / productOnPage);
+    const amount = pageAmount.current;
 
     if (direction === 'prev') {
       if (currentPage >= 2) {
         setCurrentPage(currentPage - 1);
       }
     } else if (direction === 'next') {
-      if (currentPage < pageAmount) {
+      if (currentPage < amount) {
         setCurrentPage(currentPage + 1);
       }
     }
@@ -136,37 +134,46 @@ const Catalog = () => {
     });
   };
 
-  const getProductsSlice = (paginationData, portion) => {
-    return (
-      portion.slice(
-        paginationData.pageStartOffset,
-        paginationData.pageEndOffset
-      ) || []
-    );
-  };
+  const filteredProducts = useMemo(() => {
+    return data.filter(getFilteredProducts(activeFilters));
+  }, [activeFilters, data]);
 
-  const getPaginationData = portion => {
-    if (isDataReady && portion.length > 0) {
-      const productsAmount = portion.length;
-      const pageAmount = Math.ceil(productsAmount / productOnPage);
-      const pageStartOffset = (currentPage - 1) * productOnPage;
-      const pageEndOffset = pageStartOffset + productOnPage;
-
-      return { productsAmount, pageAmount, pageStartOffset, pageEndOffset };
-    }
-
-    return {
+  const paginationData = useMemo(() => {
+    let data = {
       productsAmount: 0,
       pageAmount: 0,
       pageStartOffset: 0,
       pageEndOffset: 0,
     };
-  };
-  let portion = data;
-  portion = portion.filter(getFilteredProducts(activeFilters));
-  portion = portion.sort(sortItemsBy(sortBy));
-  let paginationData = getPaginationData(portion);
-  portion = getProductsSlice(paginationData, portion);
+
+    if (isDataReady && filteredProducts.length > 0) {
+      const productsAmount = filteredProducts.length;
+      const pageAmount = Math.ceil(productsAmount / productOnPage);
+      const pageStartOffset = (currentPage - 1) * productOnPage;
+      const pageEndOffset = pageStartOffset + productOnPage;
+
+      data.productsAmount = productsAmount;
+      data.pageAmount = pageAmount;
+      data.pageStartOffset = pageStartOffset;
+      data.pageEndOffset = pageEndOffset;
+    }
+    pageAmount.current = data.pageAmount;
+
+    return data;
+  }, [currentPage, filteredProducts, productOnPage, isDataReady]);
+
+  let portion = useMemo(() => {
+    return (
+      filteredProducts.slice(
+        paginationData.pageStartOffset,
+        paginationData.pageEndOffset
+      ) || []
+    );
+  }, [paginationData, filteredProducts]);
+
+  portion = useMemo(() => {
+    return portion.sort(sortItemsBy(sortBy));
+  }, [portion, sortBy]);
 
   if (!isDataReady) {
     return (
@@ -196,11 +203,17 @@ const Catalog = () => {
           </div>
         ) : null}
 
-        <div className="catalog__items-wrapper">
-          {portion.map(item => {
-            const { artnumber, ...rest } = item;
-            return <ProductItem key={artnumber} {...rest}></ProductItem>;
-          })}
+        <div className="catalog__items-wrapper items-wrapper">
+          {portion.length === 0 ? (
+            <span className="items-wrapper__empty">
+              Нет продуктов подходящих под эти фильтры
+            </span>
+          ) : (
+            portion.map(item => {
+              const { artnumber, ...rest } = item;
+              return <ProductItem key={artnumber} {...rest}></ProductItem>;
+            })
+          )}
         </div>
         <div className="catalog__pagination">
           <Pagintation

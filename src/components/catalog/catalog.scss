@@ -11,6 +11,11 @@
     display: grid;
     gap: rem(15);
     grid-template-columns: repeat(3, 1fr);
+    .items-wrapper {
+      &__empty {
+        grid-column: 1/-1;
+      }
+    }
   }
   /* --------------------------------- Sorting -------------------------------- */
   &__sorting {
