@@ -13,7 +13,7 @@ import { sortItemsBy, getFilteredProducts } from './helpers';
 const Catalog = () => {
   const [isDataReady, setIsDataReady] = useState(false);
   const [data, setData] = useState([]);
-  const [productOnPage, setProductOnPage] = useState(5);
+  const productOnPage = useRef(5);
   const [activeFilters, setActiveFilters] = useState({
     brand: [],
     stock: [],
@@ -148,9 +148,9 @@ const Catalog = () => {
 
     if (isDataReady && filteredProducts.length > 0) {
       const productsAmount = filteredProducts.length;
-      const pageAmount = Math.ceil(productsAmount / productOnPage);
-      const pageStartOffset = (currentPage - 1) * productOnPage;
-      const pageEndOffset = pageStartOffset + productOnPage;
+      const pageAmount = Math.ceil(productsAmount / productOnPage.current);
+      const pageStartOffset = (currentPage - 1) * productOnPage.current;
+      const pageEndOffset = pageStartOffset + productOnPage.current;
 
       data.productsAmount = productsAmount;
       data.pageAmount = pageAmount;
@@ -160,7 +160,7 @@ const Catalog = () => {
     pageAmount.current = data.pageAmount;
 
     return data;
-  }, [currentPage, filteredProducts, productOnPage, isDataReady]);
+  }, [currentPage, filteredProducts, productOnPage.current, isDataReady]);
 
   let portion = useMemo(() => {
     return (
