@@ -160,7 +160,7 @@ const Catalog = () => {
     pageAmount.current = data.pageAmount;
 
     return data;
-  }, [currentPage, filteredProducts, productOnPage.current, isDataReady]);
+  }, [currentPage, filteredProducts, isDataReady]);
 
   let portion = useMemo(() => {
     return (
